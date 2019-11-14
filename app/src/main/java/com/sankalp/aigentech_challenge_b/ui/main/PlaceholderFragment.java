@@ -170,18 +170,21 @@ public class PlaceholderFragment extends Fragment  {
             imageButton =root.findViewById(R.id.imageButton2);
 
 
-            imageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-                    StrictMode.setVmPolicy(builder.build());
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    fileTemp = getFilePath();
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileTemp));
-                    startActivityForResult(intent,CODE);
+                imageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                }
-            });
+                        if (checkPermission()) {
+                            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+                            StrictMode.setVmPolicy(builder.build());
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            fileTemp = getFilePath();
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileTemp));
+                            startActivityForResult(intent, CODE);
+                        }
+
+                    }
+                });
 
 
             button.setOnClickListener(new View.OnClickListener() {
@@ -298,6 +301,8 @@ public class PlaceholderFragment extends Fragment  {
 
         return file1;
     }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode==1&&resultCode == RESULT_OK) {
@@ -309,4 +314,23 @@ public class PlaceholderFragment extends Fragment  {
             urlX.setEnabled(false);
         }
     }
+
+    private boolean checkPermission() {
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {//Can add more as per requirement
+
+
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA},
+                    123);
+
+        } else {
+            return  true;
+        }
+        return false;
+    }
+
 }
